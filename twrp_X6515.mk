@@ -25,13 +25,10 @@ $(call inherit-product, $(SRC_TARGET_DIR)/product/base.mk)
 # Installs gsi keys into ramdisk, to boot a developer GSI with verified boot.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/gsi_keys.mk)
 
-# Virtual A/B OTA
-$(call inherit-product, $(SRC_TARGET_DIR)/product/virtual_ab_ota.mk)
-
 # Inherit from X6515 device
 $(call inherit-product, device/infinix/X6515/device.mk)
 
-# Inherit some common TWRP stuff.
+# Inherit some common TWRP stuff
 $(call inherit-product, vendor/twrp/config/common.mk)
 
 
@@ -39,14 +36,11 @@ $(call inherit-product, vendor/twrp/config/common.mk)
 PRODUCT_DEVICE := X6515
 PRODUCT_NAME := twrp_X6515
 PRODUCT_BRAND := Infinix
-PRODUCT_MODEL := X6515
+PRODUCT_MODEL := Infinix X6515
 PRODUCT_MANUFACTURER := infinix
-# fastbootd
-PRODUCT_PACKAGES += \
-    android.hardware.fastboot@1.0-impl-mock \
-    fastbootd
+
 
 PRODUCT_BUILD_PROP_OVERRIDES += \
-    PRIVATE_BUILD_DESC="vnd_x6515_h6127-user 12 SP1A.210812.016 399835 release-keys"
+PRIVATE_BUILD_DESC="vnd_x6515_h6127-user 12 SP1A.210812.016 399835 release-keys"
 
 BUILD_FINGERPRINT := Infinix/X6515-KESF/Infinix-X6515:12/SP1A.210812.016/230809V120:user/release-keys

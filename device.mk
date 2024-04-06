@@ -15,25 +15,17 @@
 # limitations under the License.
 #
 
-LOCAL_PATH := device/infinix/Infinix-X6515
+LOCAL_PATH := device/infinix/X6515
 
-# Inherit from those products. Most specific first.
-$(call inherit-product, $(SRC_TARGET_DIR)/product/emulated_storage.mk)
-
-# Dynamic Partitions
+# Dynamic partitions
 PRODUCT_USE_DYNAMIC_PARTITIONS := true
 
-# VNDK
-PRODUCT_TARGET_VNDK_VERSION := 31
+PRODUCT_PLATFORM := mt6768
 
-# API
-PRODUCT_SHIPPING_API_LEVEL := 30
-
-PRODUCT_PLATFORM := mt6761
+# Enable updating of APEXes
+$(call inherit-product, $(SRC_TARGET_DIR)/product/updatable_apex.mk)
 
 # A/B
-AB_OTA_UPDATER := true
-
 AB_OTA_PARTITIONS += \
     boot \
     dtbo \
@@ -42,50 +34,75 @@ AB_OTA_PARTITIONS += \
     product \
     system \
     system_ext \
-    odm \
     vbmeta \
     vbmeta_system \
     vbmeta_vendor \
     vendor \
     vendor_boot
-
+    
 AB_OTA_POSTINSTALL_CONFIG += \
     RUN_POSTINSTALL_system=true \
     POSTINSTALL_PATH_system=system/bin/otapreopt_script \
     FILESYSTEM_TYPE_system=ext4 \
     POSTINSTALL_OPTIONAL_system=true
 
-# VIRTUAL A/B
-ENABLE_VIRTUAL_AB := true
-
-PRODUCT_PACKAGES_DEBUG += \
-    bootctrl \
-    update_engine_client
-
-PRODUCT_PACKAGES += \
-    bootctrl \
-    bootctrl.mt6761 \
-    bootctrl.mt6761.recovery \
-    otapreopt_script \
-    update_engine \
-    update_verifier \
-    update_engine_sideload
-    
-# Fastbootd stuff
+# Fastbootd
 PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.0-impl-mock \
-    android.hardware.fastboot@1.0-impl-mock.recovery \
-    android.hardware.fastboot@1.0-impl-mtk \
     fastbootd
+
+# Health Hal
+PRODUCT_PACKAGES += \
+    android.hardware.health@2.1-impl \
+    android.hardware.health@2.1-service
+    
+# Bootctrl
+PRODUCT_PACKAGES += \
+    android.hardware.boot@1.2-mtkimpl \
+    android.hardware.boot@1.2-mtkimpl.recovery
+
+PRODUCT_PACKAGES_DEBUG += \
+    bootctrl
 
 # MTK PlPath Utils
 PRODUCT_PACKAGES += \
+    mtk_plpath_utils \
     mtk_plpath_utils.recovery
+    
+# VNDK
+PRODUCT_TARGET_VNDK_VERSION := 31
 
-# health Hal
+# API
+PRODUCT_SHIPPING_API_LEVEL := 31
+
+PRODUCT_PACKAGES_DEBUG += \
+    update_engine_client
+
 PRODUCT_PACKAGES += \
-    android.hardware.health@2.1-impl \
-    android.hardware.health@2.1-service \
+    otapreopt_script \
+    cppreopts.sh \
+    update_engine \
+    update_verifier \
+    update_engine_sideload
+
+# Additional binaries & libraries needed for recovery
+TARGET_RECOVERY_DEVICE_MODULES += \
+    libgatekeeper \
+    libgatekeeper_aidl \
+    libkeymaster41 \
+    libpuresoftkeymasterdevice
+
+TW_RECOVERY_ADDITIONAL_RELINK_LIBRARY_FILES += \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libgatekeeper.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libgatekeeper_aidl.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libkeymaster41.so \
+    $(TARGET_OUT_SHARED_LIBRARIES)/libpuresoftkeymasterdevice.so
+
+# Bypass anti-rollback ROMs protection
+# Set build date to Jan 1 2009 00:00:00
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.build.date.utc=1230768000
 
 #TW_OVERRIDE_SYSTEM_PROPS := \
-#    "ro.build.product;ro.build.fingerprint;ro.build.version.incremental;ro.product.device=ro.product.system.device;ro.product.model=ro.product.system.model;ro.product.name=ro.product.system.name"
+    "ro.build.product;ro.build.fingerprint;ro.build.version.incremental;ro.product.device=ro.product.system.device;ro.product.model=ro.product.system.model;ro.product.name=ro.product.system.name"
+
